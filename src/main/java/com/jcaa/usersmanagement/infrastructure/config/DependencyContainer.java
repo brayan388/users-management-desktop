@@ -30,7 +30,7 @@ import com.jcaa.usersmanagement.infrastructure.adapter.email.JavaMailEmailSender
 import com.jcaa.usersmanagement.infrastructure.adapter.email.SmtpConfig;
 import com.jcaa.usersmanagement.infrastructure.adapter.persistence.config.DatabaseConfig;
 import com.jcaa.usersmanagement.infrastructure.adapter.persistence.config.DatabaseConnectionFactory;
-import com.jcaa.usersmanagement.infrastructure.adapter.persistence.memory.ChildRepositoryMemory;
+import com.jcaa.usersmanagement.infrastructure.adapter.persistence.repository.ChildRepositoryMySQL;
 import com.jcaa.usersmanagement.infrastructure.adapter.persistence.repository.UserRepositoryMySQL;
 
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.controller.ChildController;
@@ -63,6 +63,7 @@ public final class DependencyContainer {
 
     final Connection connection = buildDatabaseConnection(properties);
     final UserRepositoryMySQL userRepository = new UserRepositoryMySQL(connection);
+    final ChildRepositoryMySQL childRepository = new ChildRepositoryMySQL(connection);
 
     final JavaMailEmailSenderAdapter emailSender =
         new JavaMailEmailSenderAdapter(buildSmtpConfig(properties));
@@ -100,9 +101,7 @@ public final class DependencyContainer {
             getAllUsersUseCase,
             loginUseCase);
 
-    // Child dependencies (new functionality).
-    final ChildRepositoryMemory childRepository = new ChildRepositoryMemory();
-
+    // Child dependencies (MySQL persistence).
     final CreateChildUseCase createChildUseCase =
         new CreateChildService(childRepository, childRepository, validator);
 
